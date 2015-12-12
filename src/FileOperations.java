@@ -1,4 +1,3 @@
-
 import java.io.*;
 import java.util.*;
 
@@ -24,15 +23,17 @@ public class FileOperations {
 				Chunks.add(Arrays.copyOfRange(packet, 0, read));
 				
 			} else {
+				System.out.println(packet.length);
 				Chunks.add(packet);
 			}
+			packet = new byte[2048];
 		}
 		return Chunks;
 	}
 
 	// convert the bytes into file
 	public void File_Create(List<byte[]> Packets) {
-		byte[] Files_bytes = new byte[Packets.size() * Packets.get(0).length];
+		byte[] Files_bytes = new byte[(Packets.size() - 1) * Packets.get(0).length + Packets.get(Packets.size()-1).length];
 		int byte_index = 0;
 		for (int i = 0; i < Packets.size(); i++) {
 			byte[] bytes = Packets.get(i);

@@ -1,4 +1,3 @@
-				
 import java.io.IOException;		
 import java.net.*;			
 import java.util.*;		
@@ -10,14 +9,12 @@ public class GoBacknServer {
 	private DatagramSocket Socket;		
 	private Random r = new Random();		
 			
-	public GoBacknServer(List<byte[]> Packets, DatagramSocket Socket) {		
+	public GoBacknServer(List<byte[]> Packets, DatagramSocket Socket) {
 		this.Packets = Packets;		
 		this.Socket  = Socket;		
 	}		
-			
-			
-			
-	public void Start( InetAddress Client_address, int Client_port) throws InterruptedException, IOException {		
+					
+	public void Start( InetAddress Client_address, int Client_port) throws InterruptedException, IOException {
 		boolean dataSent[] = new boolean[Packets.size()];		
 		boolean ACKreceived[] = new boolean[Packets.size()];		
 		Arrays.fill(ACKreceived, false);		
@@ -67,7 +64,7 @@ public class GoBacknServer {
 		}		
 	}		
 			
-	private boolean Send(DatagramPacket packetSend, DatagramPacket orderOfPacket) throws IOException, InterruptedException{		
+	private boolean Send(DatagramPacket packetSend, DatagramPacket orderOfPacket) throws IOException, InterruptedException{
 		int probability;		
 		if( (probability = r.nextInt(10)) >= 5){		
 			Socket.send(packetSend);
@@ -81,12 +78,12 @@ public class GoBacknServer {
 		}			
 	}		
 			
-	private boolean Receive( byte[] buffer) throws IOException{		
+	private boolean Receive( byte[] buffer) throws IOException, InterruptedException{
 		try {		
 			Packet_Receive = new DatagramPacket(buffer,buffer.length);		
 			Socket.setSoTimeout(1000);		
 			Socket.receive(Packet_Receive);		
-			System.out.println("ACK has been received");		
+			System.out.println("ACK has been received000000000000");		
 		} catch (java.net.SocketTimeoutException e) {		
 			System.out.println("ACK has not been received");		
 			return false;		

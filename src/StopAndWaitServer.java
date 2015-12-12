@@ -1,20 +1,19 @@
-				
-import java.io.*;		
-import java.net.*;		
-import java.util.*;		
+import java.io.*;	
+import java.net.*;	
+import java.util.*;
 		
 public class StopAndWaitServer {		
 	private DatagramPacket Packet_Send, Packet_Receive, Packet_Order_Send;		
 	private List<byte[]> Packets;		
 	private DatagramSocket Socket;		
-	private Random r = new Random();		
-	public StopAndWaitServer(List <byte[]> Packets, DatagramSocket Socket) {		
+	private Random r = new Random();	
+	
+	public StopAndWaitServer(List <byte[]> Packets, DatagramSocket Socket) {
 		this.Packets = Packets;		
-		this.Socket  = Socket;		
-				
-	}		
+		this.Socket  = Socket;						
+	}
 			
-	public void Start(InetAddress Client_address, int Client_port) throws IOException {		
+	public void Start(InetAddress Client_address, int Client_port) throws IOException {
 		byte[] buffer = new byte[500];		
 	    byte[] order = new byte[100];		
 		for(int i = 0; i < Packets.size(); i++){		
