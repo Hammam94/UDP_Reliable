@@ -1,6 +1,9 @@
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.zip.CRC32;
+import java.util.zip.Checksum;
+
 
 public class Client {
 	final static int Port = 11234;
@@ -8,7 +11,6 @@ public class Client {
 	private static DatagramPacket Packet_Receive, Packet_Send;
 	private static List<byte[]> Packets = new ArrayList<byte[]>();
 	private static InetAddress inetAddress;
-	
 	public static void main(String[] args) throws IOException, InterruptedException {
 		
 		
@@ -38,12 +40,15 @@ public class Client {
 		byte[] receiveData = new byte[2048];  
 		
 		//Check hand connection
+		sendData = "C:/Users/mahmoud/Desktop/NetWork/a.txt".getBytes();
 		Packet_Send = new DatagramPacket(sendData, sendData.length, IPAddress, 4444);       
 		Socket.send(Packet_Send);       
 		
 		//get number of the file's packets
 		Packet_Receive = new DatagramPacket(receiveData, receiveData.length);       
 		Socket.receive(Packet_Receive);
+		Checksum g = new CRC32();
+			
 		int Packet_number = Integer.parseInt(new String(Packet_Receive.getData()).trim());
 		boolean[] arrivedPackets = new boolean[Packet_number];
 		Arrays.fill(arrivedPackets, false);
@@ -51,12 +56,21 @@ public class Client {
 		for(int i = 0; i < Packet_number; i++) {
 			Packet_Receive = new DatagramPacket(receiveData, receiveData.length);       
 			Socket.receive(Packet_Receive);
-			DatagramPacket Order_Packet_Receive = new DatagramPacket(new byte[2048], 2048);       
+			DatagramPacket Order_Packet_Receive = new DatagramPacket(new byte[2048], 2048);
 			Socket.receive(Order_Packet_Receive);
-			String order = new String(Order_Packet_Receive.getData()).trim();
+			DatagramPacket CheckSumPacket = new DatagramPacket(new byte[2048], 2048);
+			Socket.receive(CheckSumPacket);
 			
-			if(Integer.valueOf(order) == 0 
-					|| arrivedPackets[Integer.valueOf(order) -1]){
+			//checkSum
+			long Checksum = Long.valueOf(new String(CheckSumPacket.getData()).trim());
+			
+			String order = new String(Order_Packet_Receive.getData()).trim();
+			g.reset();
+			g.update(Packet_Receive.getData(), 0, Packet_Receive.getLength());
+			System.out.println((g.getValue() == Checksum) + "     " + g.getValue() + "     " + Checksum + "      " + Packet_Receive.getLength());
+			
+			if(    (Integer.valueOf(order) == 0 || arrivedPackets[Integer.valueOf(order) -1])
+					&& g.getValue() == Checksum){
 				arrivedPackets[Integer.valueOf(order)] = true;
 				byte[] buf = new byte[Packet_Receive.getLength()];
 				System.arraycopy(Packet_Receive.getData(), Packet_Receive.getOffset(), buf, 0, Packet_Receive.getLength());
@@ -74,8 +88,8 @@ public class Client {
 		Socket.close();
 		
 		// create the file
-		FileOperations cc = new FileOperations("C:/Users/mahmoud/Desktop/NetWork/Server_file.txt");
-        cc.File_Create(Packets);
+		FileOperations fo = new FileOperations("C:/Users/mahmoud/Desktop/NetWork/Server_file.txt");
+        fo.File_Create(Packets);
 	}
 
 }
